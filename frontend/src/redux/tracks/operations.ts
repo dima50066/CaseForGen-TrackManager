@@ -11,7 +11,6 @@ import {
   DeleteTracksDto,
   DeleteTracksResponse,
   UploadTrackAudioResponse,
-  Genre,
 } from "../../types/types";
 
 // ===============================
@@ -195,28 +194,6 @@ export const deleteTrackAudio = createAsyncThunk<
       error.response?.data && typeof error.response.data === "string"
         ? error.response.data
         : "Failed to delete audio file";
-    return thunkAPI.rejectWithValue(message);
-  }
-});
-
-// ===============================
-// ========= FETCH GENRES ========
-// ===============================
-
-export const fetchGenres = createAsyncThunk<
-  Genre[],
-  void,
-  { rejectValue: string }
->("genres/fetchAll", async (_, thunkAPI) => {
-  try {
-    const res = await axiosInstance.get<Genre[]>("/genres");
-    return res.data;
-  } catch (err) {
-    const error = err as AxiosError;
-    const message =
-      error.response?.data && typeof error.response.data === "string"
-        ? error.response.data
-        : "Failed to fetch genres";
     return thunkAPI.rejectWithValue(message);
   }
 });

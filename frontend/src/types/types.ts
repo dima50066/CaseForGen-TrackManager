@@ -40,7 +40,6 @@ export interface TracksState {
   meta: Meta | null;
   isLoading: boolean;
   error: string | null;
-  genres: GenresState;
 }
 
 // ===============================

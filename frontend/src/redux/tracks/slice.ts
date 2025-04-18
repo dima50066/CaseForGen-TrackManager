@@ -8,7 +8,6 @@ import {
   deleteTracksBulk,
   uploadTrackAudio,
   deleteTrackAudio,
-  fetchGenres,
 } from "./operations";
 import { TracksState, TrackResponse } from "../../types/types";
 
@@ -34,11 +33,6 @@ const initialState: CombinedTracksState = {
   },
   isLoading: false,
   error: null,
-  genres: {
-    items: [],
-    isLoading: false,
-    error: null,
-  },
   selectedTrack: null,
   selectedTrackLoading: false,
   selectedTrackError: null,
@@ -219,23 +213,6 @@ const trackSlice = createSlice({
       .addCase(deleteTrackAudio.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload || "Failed to delete audio file";
-      });
-
-    // ===============================
-    // ======== FETCH GENRES =========
-    // ===============================
-    builder
-      .addCase(fetchGenres.pending, (state) => {
-        state.genres.isLoading = true;
-        state.genres.error = null;
-      })
-      .addCase(fetchGenres.fulfilled, (state, action) => {
-        state.genres.isLoading = false;
-        state.genres.items = action.payload;
-      })
-      .addCase(fetchGenres.rejected, (state, action) => {
-        state.genres.isLoading = false;
-        state.genres.error = action.payload || "Failed to fetch genres";
       });
   },
 });

@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { tracksReducer } from "./tracks/slice";
+import { genresReducer } from "./genres/slice";
 import {
   persistStore,
   persistReducer,
@@ -15,6 +16,7 @@ import { combineReducers } from "redux";
 
 const rootReducer = combineReducers({
   tracks: tracksReducer,
+  genres: genresReducer,
 });
 
 const persistConfig = {
