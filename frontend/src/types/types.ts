@@ -18,8 +18,8 @@ export interface Track {
   artist: string;
   album?: string;
   coverImage?: string;
-  genres: Genre[];
-  fileUrl?: string;
+  genres: string[];
+  audioFile: string;
   createdAt: string;
   updatedAt: string;
 }

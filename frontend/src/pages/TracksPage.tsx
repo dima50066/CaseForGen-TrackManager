@@ -57,7 +57,6 @@ const TracksPage: React.FC = () => {
       }, 500),
     []
   );
-  console.log(tracks);
   const uniqueArtists = Array.from(
     new Set(
       tracks
