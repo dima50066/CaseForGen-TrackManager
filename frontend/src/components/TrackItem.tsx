@@ -2,6 +2,7 @@ import React from "react";
 import { Track } from "../types/types";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
+import Icon from "../shared/icon/Icon";
 
 interface Props {
   track: Track;
@@ -52,33 +53,35 @@ const TrackItem: React.FC<Props> = ({ track }) => {
       </div>
 
       {/* ACTION BUTTONS */}
-      <div className="flex gap-3 mt-2">
+      <div className="flex gap-4 mt-2 items-center">
         <button
           data-testid={`edit-track-${track.id}`}
-          className="text-blue-600 hover:underline"
           onClick={() => {
             // TODO: open edit modal
           }}
+          className="hover:text-blue-600 transition"
         >
-          Edit
+          <Icon id="edit" className="w-5 h-5 text-black stroke-black" />
         </button>
+
         <button
           data-testid={`delete-track-${track.id}`}
-          className="text-red-600 hover:underline"
           onClick={() => {
             // TODO: open confirm delete dialog
           }}
+          className="hover:text-red-600 transition"
         >
-          Delete
+          <Icon id="trash" className="w-5 h-5" />
         </button>
+
         <button
           data-testid={`upload-track-${track.id}`}
-          className="text-green-600 hover:underline"
           onClick={() => {
             // TODO: open upload modal
           }}
+          className="hover:text-green-600 transition"
         >
-          Upload
+          <Icon id="upload" className="w-5 h-5" />
         </button>
       </div>
 
