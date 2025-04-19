@@ -10,6 +10,7 @@ import {
   deleteTrackAudio,
 } from "./operations";
 import { TracksState, TrackResponse } from "../../types/types";
+import { normalizeTrack } from "../../utils/normalizeTrack";
 
 // ===============================
 // ======= COMBINED STATE TYPE ===
@@ -74,7 +75,7 @@ const trackSlice = createSlice({
       })
       .addCase(createTrack.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.items.unshift(action.payload);
+        state.items.unshift(normalizeTrack(action.payload));
       })
       .addCase(createTrack.rejected, (state, action) => {
         state.isLoading = false;
@@ -111,7 +112,7 @@ const trackSlice = createSlice({
         state.isLoading = false;
         const index = state.items.findIndex((t) => t.id === action.payload.id);
         if (index !== -1) {
-          state.items[index] = action.payload;
+          state.items[index] = normalizeTrack(action.payload);
         }
         if (state.selectedTrack?.id === action.payload.id) {
           state.selectedTrack = action.payload;
@@ -179,7 +180,7 @@ const trackSlice = createSlice({
           (track) => track.id === action.payload.id
         );
         if (index !== -1) {
-          state.items[index] = action.payload;
+          state.items[index] = normalizeTrack(action.payload);
         }
         if (state.selectedTrack?.id === action.payload.id) {
           state.selectedTrack = action.payload;
@@ -204,7 +205,7 @@ const trackSlice = createSlice({
           (track) => track.id === action.payload.id
         );
         if (index !== -1) {
-          state.items[index] = action.payload;
+          state.items[index] = normalizeTrack(action.payload);
         }
         if (state.selectedTrack?.id === action.payload.id) {
           state.selectedTrack = action.payload;

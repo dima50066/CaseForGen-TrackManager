@@ -70,14 +70,14 @@ const Modal: React.FC<ModalProps> = ({
     <div
       className={clsx(
         "fixed inset-0 flex items-center justify-center z-50 modal-instance",
-        !isMobile && "bg-black bg-opacity-50"
+        !isMobile && "bg-black/50"
       )}
       onClick={handleBackdropClick}
     >
       <div
         className={clsx(
           "relative bg-white rounded-xl shadow-lg w-full max-w-md",
-          isMobile ? "h-screen max-h-screen" : "max-h-[80vh]",
+          isMobile ? "h-screen max-h-screen" : "max-h-[100vh]",
           classNameWrapper
         )}
         onClick={(e) => e.stopPropagation()}
@@ -89,14 +89,17 @@ const Modal: React.FC<ModalProps> = ({
           )}
         >
           <button
+            aria-label="Close modal"
             className={clsx(
-              "absolute text-gray-600 hover:text-red-500 transition",
+              "absolute hover:cursor-pointer transition-all duration-200 ease-in-out",
+              "text-gray-600 hover:text-red-500 active:scale-90",
               btnClassName || "top-4 right-4"
             )}
             onClick={onClose}
           >
-            <Icon id="menu-close" className="w-6 h-6 stroke-black" />
+            <Icon id="close" className="w-6 h-6 stroke-current text-current" />
           </button>
+
           {children}
         </div>
       </div>

@@ -2,10 +2,8 @@
 // ========= ENTITIES ============
 // ===============================
 
-export interface Genre {
-  id: number;
-  name: string;
-}
+export type Genre = string;
+
 export interface GenresState {
   items: Genre[];
   isLoading: boolean;
@@ -22,6 +20,7 @@ export interface Track {
   audioFile: string;
   createdAt: string;
   updatedAt: string;
+  slug: string;
 }
 
 // ===============================

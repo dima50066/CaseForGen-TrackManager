@@ -58,8 +58,8 @@ const TrackFilters: React.FC<Props> = ({
       >
         <option value="">All Genres</option>
         {genres.map((g) => (
-          <option key={g.id} value={g.name}>
-            {g.name}
+          <option key={g} value={g}>
+            {g}
           </option>
         ))}
       </select>

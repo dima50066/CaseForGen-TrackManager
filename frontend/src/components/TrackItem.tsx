@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Track } from "../types/types";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import Icon from "../shared/icon/Icon";
-
+import Modal from "../shared/modal/Modal";
+import TrackForm from "./TrackForm";
 interface Props {
   track: Track;
 }
 
 const TrackItem: React.FC<Props> = ({ track }) => {
   const audioUrl = track.audioFile ? `/uploads/${track.audioFile}` : null;
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   return (
     <li
@@ -56,10 +58,8 @@ const TrackItem: React.FC<Props> = ({ track }) => {
       <div className="flex gap-4 mt-2 items-center">
         <button
           data-testid={`edit-track-${track.id}`}
-          onClick={() => {
-            // TODO: open edit modal
-          }}
-          className="hover:text-blue-600 transition"
+          onClick={() => setIsEditOpen(true)}
+          className="hover:text-blue-600 transition-colors"
         >
           <Icon id="edit" className="w-5 h-5 text-black stroke-black" />
         </button>
@@ -69,7 +69,7 @@ const TrackItem: React.FC<Props> = ({ track }) => {
           onClick={() => {
             // TODO: open confirm delete dialog
           }}
-          className="hover:text-red-600 transition"
+          className="hover:text-red-600 transition-colors"
         >
           <Icon id="trash" className="w-5 h-5" />
         </button>
@@ -79,7 +79,7 @@ const TrackItem: React.FC<Props> = ({ track }) => {
           onClick={() => {
             // TODO: open upload modal
           }}
-          className="hover:text-green-600 transition"
+          className="hover:text-green-600 transition-colors"
         >
           <Icon id="upload" className="w-5 h-5" />
         </button>
@@ -97,6 +97,21 @@ const TrackItem: React.FC<Props> = ({ track }) => {
           />
         </div>
       )}
+
+      <Modal
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        classNameWrapper="max-w-2xl w-full sm:w-[90%] "
+      >
+        <TrackForm
+          track={{
+            ...track,
+            genres: track.genres,
+            slug: track.slug,
+          }}
+          onSubmitComplete={() => setIsEditOpen(false)}
+        />
+      </Modal>
     </li>
   );
 };

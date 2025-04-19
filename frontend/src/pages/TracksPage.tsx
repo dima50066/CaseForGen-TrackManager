@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import TrackFilters from "../components/TrackFilters";
 import TrackList from "../components/TrackList";
 import Pagination from "../components/Pagination";
-
 import { fetchTracks } from "../redux/tracks/operations";
 import { fetchGenres } from "../redux/genres/operations";
 import {
@@ -14,6 +13,8 @@ import {
 import { selectGenres } from "../redux/genres/selectors";
 import type { AppDispatch } from "../redux/store";
 import { debounce } from "lodash";
+import Modal from "../shared/modal/Modal";
+import TrackForm from "../components/TrackForm";
 
 const TracksPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -30,6 +31,8 @@ const TracksPage: React.FC = () => {
   );
   const [genre, setGenre] = useState("");
   const [artist, setArtist] = useState("");
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchGenres());
@@ -75,11 +78,7 @@ const TracksPage: React.FC = () => {
         <button
           data-testid="create-track-button"
           className="bg-blue-600 text-white px-4 py-2 rounded"
-          onClick={() => {
-            {
-              /* future component: <TrackActions track={track} /> */
-            }
-          }}
+          onClick={() => setIsCreateModalOpen(true)}
         >
           Create Track
         </button>
@@ -107,6 +106,14 @@ const TracksPage: React.FC = () => {
         onNext={() => setPage((prev) => prev + 1)}
         onPrev={() => setPage((prev) => Math.max(prev - 1, 1))}
       />
+
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        classNameWrapper="max-w-2xl w-full sm:w-[90%]"
+      >
+        <TrackForm onSubmitComplete={() => setIsCreateModalOpen(false)} />
+      </Modal>
     </div>
   );
 };
