@@ -5,6 +5,8 @@ import "react-h5-audio-player/lib/styles.css";
 import Icon from "../shared/icon/Icon";
 import Modal from "../shared/modal/Modal";
 import TrackForm from "./TrackForm";
+import UploadForm from "./UploadForm";
+
 interface Props {
   track: Track;
 }
@@ -12,6 +14,7 @@ interface Props {
 const TrackItem: React.FC<Props> = ({ track }) => {
   const audioUrl = track.audioFile ? `/uploads/${track.audioFile}` : null;
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   return (
     <li
@@ -19,7 +22,6 @@ const TrackItem: React.FC<Props> = ({ track }) => {
       data-testid={`track-item-${track.id}`}
       className="border p-4 rounded shadow-sm bg-white space-y-3"
     >
-      {/* COVER IMAGE */}
       {track.coverImage && (
         <img
           src={track.coverImage}
@@ -28,7 +30,6 @@ const TrackItem: React.FC<Props> = ({ track }) => {
         />
       )}
 
-      {/* TITLE & ARTIST */}
       <div className="space-y-1">
         <div
           data-testid={`track-item-${track.id}-title`}
@@ -54,7 +55,6 @@ const TrackItem: React.FC<Props> = ({ track }) => {
         )}
       </div>
 
-      {/* ACTION BUTTONS */}
       <div className="flex gap-4 mt-2 items-center">
         <button
           data-testid={`edit-track-${track.id}`}
@@ -76,16 +76,13 @@ const TrackItem: React.FC<Props> = ({ track }) => {
 
         <button
           data-testid={`upload-track-${track.id}`}
-          onClick={() => {
-            // TODO: open upload modal
-          }}
+          onClick={() => setIsUploadOpen(true)}
           className="hover:text-green-600 transition-colors"
         >
           <Icon id="upload" className="w-5 h-5" />
         </button>
       </div>
 
-      {/* AUDIO PLAYER */}
       {audioUrl && (
         <div data-testid={`audio-player-${track.id}`} className="mt-4">
           <AudioPlayer
@@ -101,7 +98,7 @@ const TrackItem: React.FC<Props> = ({ track }) => {
       <Modal
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}
-        classNameWrapper="max-w-2xl w-full sm:w-[90%] "
+        classNameWrapper="max-w-2xl w-full sm:w-[90%]"
       >
         <TrackForm
           track={{
@@ -110,6 +107,17 @@ const TrackItem: React.FC<Props> = ({ track }) => {
             slug: track.slug,
           }}
           onSubmitComplete={() => setIsEditOpen(false)}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={isUploadOpen}
+        onClose={() => setIsUploadOpen(false)}
+        classNameWrapper="max-w-xl w-full"
+      >
+        <UploadForm
+          trackId={track.id}
+          onUploadComplete={() => setIsUploadOpen(false)}
         />
       </Modal>
     </li>
