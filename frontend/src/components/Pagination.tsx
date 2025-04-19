@@ -5,9 +5,16 @@ interface Props {
   totalPages: number;
   onNext: () => void;
   onPrev: () => void;
+  isLoading?: boolean;
 }
 
-const Pagination: React.FC<Props> = ({ page, totalPages, onNext, onPrev }) => {
+const Pagination: React.FC<Props> = ({
+  page,
+  totalPages,
+  onNext,
+  onPrev,
+  isLoading = false,
+}) => {
   const isFirst = page === 1;
   const isLast = page >= totalPages;
 
@@ -15,13 +22,15 @@ const Pagination: React.FC<Props> = ({ page, totalPages, onNext, onPrev }) => {
     <div
       data-testid="pagination"
       className="flex gap-4 items-center justify-center mt-6"
+      aria-live="polite"
     >
       <button
         aria-label="Previous Page"
         data-testid="pagination-prev"
         onClick={onPrev}
-        disabled={isFirst}
-        aria-disabled={isFirst}
+        disabled={isFirst || isLoading}
+        aria-disabled={isFirst || isLoading}
+        data-loading={isLoading ? "true" : undefined}
         className="px-4 py-2 border rounded disabled:opacity-50"
       >
         Prev
@@ -35,8 +44,9 @@ const Pagination: React.FC<Props> = ({ page, totalPages, onNext, onPrev }) => {
         aria-label="Next Page"
         data-testid="pagination-next"
         onClick={onNext}
-        disabled={isLast}
-        aria-disabled={isLast}
+        disabled={isLast || isLoading}
+        aria-disabled={isLast || isLoading}
+        data-loading={isLoading ? "true" : undefined}
         className="px-4 py-2 border rounded disabled:opacity-50"
       >
         Next

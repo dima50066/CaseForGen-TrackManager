@@ -10,6 +10,7 @@ import type {
   TrackResponse,
 } from "../types/types";
 import clsx from "clsx";
+import { toast } from "sonner";
 
 interface Props {
   track?: TrackResponse | null;
@@ -28,6 +29,7 @@ const TrackForm: React.FC<Props> = ({ track, onSubmitComplete }) => {
   const [coverImage, setCoverImage] = useState("");
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     dispatch(fetchGenres());
@@ -75,6 +77,7 @@ const TrackForm: React.FC<Props> = ({ track, onSubmitComplete }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setIsSubmitting(true);
 
     const dto: CreateTrackDto | UpdateTrackDto = {
       title,
@@ -84,13 +87,29 @@ const TrackForm: React.FC<Props> = ({ track, onSubmitComplete }) => {
       genres: selectedGenres,
     };
 
-    if (isEdit && track) {
-      await dispatch(updateTrack({ id: track.id, data: dto }));
-    } else {
-      await dispatch(createTrack(dto));
-    }
+    try {
+      if (isEdit && track) {
+        await dispatch(updateTrack({ id: track.id, data: dto })).unwrap();
+        toast.success("Track updated successfully", {
+          className: "toast-success",
+        });
+      } else {
+        await dispatch(createTrack(dto)).unwrap();
+        toast.success("Track created successfully", {
+          className: "toast-success",
+        });
+      }
 
-    onSubmitComplete();
+      onSubmitComplete();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Something went wrong.";
+      toast.error(message, {
+        className: "toast-error",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -98,6 +117,7 @@ const TrackForm: React.FC<Props> = ({ track, onSubmitComplete }) => {
       data-testid="track-form"
       onSubmit={handleSubmit}
       className="space-y-4 p-4"
+      aria-live="polite"
     >
       <h2 className="text-xl font-semibold">
         {isEdit ? "Edit Track" : "Create Track"}
@@ -107,6 +127,7 @@ const TrackForm: React.FC<Props> = ({ track, onSubmitComplete }) => {
         <label className="block font-medium">Title</label>
         <input
           data-testid="input-title"
+          aria-label="Track Title"
           className="border p-2 rounded w-full"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -122,6 +143,7 @@ const TrackForm: React.FC<Props> = ({ track, onSubmitComplete }) => {
         <label className="block font-medium">Artist</label>
         <input
           data-testid="input-artist"
+          aria-label="Track Artist"
           className="border p-2 rounded w-full"
           value={artist}
           onChange={(e) => setArtist(e.target.value)}
@@ -137,6 +159,7 @@ const TrackForm: React.FC<Props> = ({ track, onSubmitComplete }) => {
         <label className="block font-medium">Album</label>
         <input
           data-testid="input-album"
+          aria-label="Track Album"
           className="border p-2 rounded w-full"
           value={album}
           onChange={(e) => setAlbum(e.target.value)}
@@ -147,6 +170,7 @@ const TrackForm: React.FC<Props> = ({ track, onSubmitComplete }) => {
         <label className="block font-medium">Cover Image URL</label>
         <input
           data-testid="input-cover-image"
+          aria-label="Track Cover Image"
           className="border p-2 rounded w-full"
           value={coverImage}
           onChange={(e) => setCoverImage(e.target.value)}
@@ -207,6 +231,9 @@ const TrackForm: React.FC<Props> = ({ track, onSubmitComplete }) => {
           "px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700",
           "disabled:opacity-50"
         )}
+        disabled={isSubmitting}
+        aria-disabled={isSubmitting}
+        data-loading={isSubmitting ? "true" : undefined}
       >
         {isEdit ? "Save Changes" : "Create"}
       </button>

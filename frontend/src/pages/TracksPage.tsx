@@ -18,6 +18,8 @@ import Modal from "../shared/modal/Modal";
 import TrackForm from "../components/TrackForm";
 import BulkModePanel from "../components/BulkModePanel";
 import { toggleBulkMode } from "../redux/tracks/slice";
+import { toast } from "sonner";
+import { selectError } from "../redux/tracks/selectors";
 
 const TracksPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -37,7 +39,12 @@ const TracksPage: React.FC = () => {
   const [artist, setArtist] = useState("");
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
+  const error = useSelector(selectError);
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
   useEffect(() => {
     dispatch(fetchGenres());
   }, [dispatch]);

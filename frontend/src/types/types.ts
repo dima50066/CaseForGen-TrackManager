@@ -147,3 +147,13 @@ export interface UploadTrackAudioResponse {
   createdAt: string;
   updatedAt: string;
 }
+// ===============================
+// ===== TOAST =======
+// ===============================
+
+export type ToastType = "success" | "error" | "warning";
+export interface Toast {
+  id: string;
+  type: ToastType;
+  message: string;
+}

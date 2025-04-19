@@ -1,4 +1,5 @@
 import React from "react";
+import { toast } from "sonner";
 import type { Genre } from "../types/types";
 
 interface Props {
@@ -24,12 +25,36 @@ const TrackFilters: React.FC<Props> = ({
   genreValue,
   artistValue,
 }) => {
+  const handleGenreChange = (value: string) => {
+    onGenreChange(value);
+    toast(`Filtering by Genre: ${value || "All"}`, {
+      className: "toast-info",
+    });
+  };
+
+  const handleArtistChange = (value: string) => {
+    onArtistChange(value);
+    toast(`Filtering by Artist: ${value || "All"}`, {
+      className: "toast-info",
+    });
+  };
+
+  const handleSortChange = (
+    value: "title" | "artist" | "album" | "createdAt"
+  ) => {
+    onSortChange(value);
+    toast(`Sorted by ${value}`, {
+      className: "toast-info",
+    });
+  };
+
   return (
     <>
       <input
         data-testid="search-input"
         type="text"
         placeholder="Search..."
+        aria-label="Search tracks"
         onChange={(e) => onSearchChange(e.target.value)}
         className="border p-2 rounded w-64"
       />
@@ -37,8 +62,9 @@ const TrackFilters: React.FC<Props> = ({
       <select
         data-testid="sort-select"
         value={sortValue}
+        aria-label="Sort tracks"
         onChange={(e) =>
-          onSortChange(
+          handleSortChange(
             e.target.value as "title" | "artist" | "album" | "createdAt"
           )
         }
@@ -53,7 +79,8 @@ const TrackFilters: React.FC<Props> = ({
       <select
         data-testid="filter-genre"
         value={genreValue}
-        onChange={(e) => onGenreChange(e.target.value)}
+        aria-label="Filter by genre"
+        onChange={(e) => handleGenreChange(e.target.value)}
         className="border p-2 rounded"
       >
         <option value="">All Genres</option>
@@ -67,7 +94,8 @@ const TrackFilters: React.FC<Props> = ({
       <select
         data-testid="filter-artist"
         value={artistValue}
-        onChange={(e) => onArtistChange(e.target.value)}
+        aria-label="Filter by artist"
+        onChange={(e) => handleArtistChange(e.target.value)}
         className="border p-2 rounded"
       >
         <option value="">All Artists</option>

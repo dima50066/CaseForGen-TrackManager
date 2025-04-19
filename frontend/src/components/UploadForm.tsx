@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { uploadTrackAudio, deleteTrackAudio } from "../redux/tracks/operations";
-import { useSelector } from "react-redux";
 import { selectTracks } from "../redux/tracks/selectors";
+import { toast } from "sonner";
 
 interface Props {
   trackId: number;
@@ -42,10 +42,14 @@ const UploadForm: React.FC<Props> = ({ trackId, onUploadComplete }) => {
       const validationError = validateFile(selected);
       if (validationError) {
         setError(validationError);
+        toast.error(validationError, { className: "toast-error" });
         setFile(null);
       } else {
         setError(null);
         setFile(selected);
+        toast.success(`Selected file: ${selected.name}`, {
+          className: "toast-success",
+        });
       }
     }
   };
@@ -53,20 +57,38 @@ const UploadForm: React.FC<Props> = ({ trackId, onUploadComplete }) => {
   const handleUpload = async () => {
     if (!file) return;
     setLoading(true);
-    await dispatch(uploadTrackAudio({ id: trackId, file }));
-    setLoading(false);
-    onUploadComplete();
+    try {
+      await dispatch(uploadTrackAudio({ id: trackId, file })).unwrap();
+      toast.success("Audio uploaded successfully!", {
+        className: "toast-success",
+      });
+      onUploadComplete();
+    } catch {
+      toast.error("Failed to upload audio file.", {
+        className: "toast-error",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async () => {
     setLoading(true);
-    await dispatch(deleteTrackAudio(trackId));
-    setLoading(false);
-    onUploadComplete();
+    try {
+      await dispatch(deleteTrackAudio(trackId)).unwrap();
+      toast.success("Audio removed.", { className: "toast-success" });
+      onUploadComplete();
+    } catch {
+      toast.error("Failed to delete audio file.", {
+        className: "toast-error",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="space-y-4 p-4" data-testid="upload-form">
+    <div className="space-y-4 p-4" data-testid="upload-form" aria-live="polite">
       <h2 className="text-xl font-semibold">Upload Audio</h2>
 
       <div>
@@ -83,16 +105,23 @@ const UploadForm: React.FC<Props> = ({ trackId, onUploadComplete }) => {
           accept=".mp3,.wav"
           onChange={handleFileChange}
           className="hidden"
+          aria-label="Upload audio file"
         />
       </div>
 
-      {error && <div className="text-red-500 text-sm">{error}</div>}
+      {error && (
+        <div className="text-red-500 text-sm" data-testid="upload-error">
+          {error}
+        </div>
+      )}
 
       <div className="flex gap-3">
         <button
           data-testid="upload-button"
-          disabled={!file || loading}
           onClick={handleUpload}
+          disabled={!file || loading}
+          aria-disabled={!file || loading}
+          data-loading={loading ? "true" : undefined}
           className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
         >
           Upload
@@ -102,8 +131,10 @@ const UploadForm: React.FC<Props> = ({ trackId, onUploadComplete }) => {
           <button
             data-testid="delete-audio-button"
             onClick={handleDelete}
-            className="bg-red-500 text-white px-4 py-2 rounded disabled:opacity-50"
             disabled={loading}
+            aria-disabled={loading}
+            data-loading={loading ? "true" : undefined}
+            className="bg-red-500 text-white px-4 py-2 rounded disabled:opacity-50"
           >
             Delete Audio
           </button>
@@ -111,12 +142,8 @@ const UploadForm: React.FC<Props> = ({ trackId, onUploadComplete }) => {
       </div>
 
       {currentTrack?.audioFile && (
-        <div className="mt-4">
-          <audio
-            controls
-            src={`/uploads/${currentTrack.audioFile}`}
-            data-testid="audio-preview"
-          />
+        <div className="mt-4" data-testid="audio-preview">
+          <audio controls src={`/uploads/${currentTrack.audioFile}`} />
         </div>
       )}
     </div>

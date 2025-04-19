@@ -10,6 +10,7 @@ import UploadForm from "./UploadForm";
 import ConfirmDialog from "../shared/dialog/ConfirmDialog";
 import { deleteTrack } from "../redux/tracks/operations";
 import { AppDispatch } from "../redux/store";
+import { toast } from "sonner";
 
 interface Props {
   track: Track;
@@ -30,18 +31,32 @@ const TrackItem: React.FC<Props> = ({
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
-    await dispatch(deleteTrack(track.id));
-    setIsConfirmOpen(false);
+    try {
+      setIsDeleting(true);
+      await dispatch(deleteTrack(track.id)).unwrap();
+      toast.success(`Track "${track.title}" deleted successfully`, {
+        className: "toast-success",
+      });
+    } catch {
+      toast.error("Failed to delete track. Please try again.", {
+        className: "toast-error",
+      });
+    } finally {
+      setIsDeleting(false);
+      setIsConfirmOpen(false);
+    }
   };
 
   return (
     <li
       key={track.id}
       data-testid={`track-item-${track.id}`}
-      className={`border-2 p-4 rounded shadow-sm bg-white space-y-3 cursor-pointer transition
-    ${bulkMode && isSelected ? "border-blue-600 bg-blue-50" : ""}`}
+      className={`border-2 p-4 rounded shadow-sm bg-white space-y-3 cursor-pointer transition ${
+        bulkMode && isSelected ? "border-blue-600 bg-blue-50" : ""
+      }`}
     >
       <div
         className="flex gap-4"
@@ -89,25 +104,33 @@ const TrackItem: React.FC<Props> = ({
             )}
           </div>
 
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4 items-center mt-1">
             <button
               onClick={() => setIsEditOpen(true)}
               className="hover:text-blue-600 transition-colors"
               data-testid={`edit-track-${track.id}`}
+              aria-label={`Edit ${track.title}`}
             >
               <Icon id="edit" className="w-5 h-5 text-black stroke-black" />
             </button>
+
             <button
               onClick={() => setIsConfirmOpen(true)}
               className="hover:text-red-600 transition-colors"
               data-testid={`delete-track-${track.id}`}
+              aria-label={`Delete ${track.title}`}
+              disabled={isDeleting}
+              aria-disabled={isDeleting}
+              data-loading={isDeleting ? "true" : undefined}
             >
               <Icon id="trash" className="w-5 h-5" />
             </button>
+
             <button
               onClick={() => setIsUploadOpen(true)}
               className="hover:text-green-600 transition-colors"
               data-testid={`upload-track-${track.id}`}
+              aria-label={`Upload file for ${track.title}`}
             >
               <Icon id="upload" className="w-5 h-5" />
             </button>
