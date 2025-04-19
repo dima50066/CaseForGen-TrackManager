@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import TrackFilters from "../components/TrackFilters";
 import TrackList from "../components/TrackList";
 import Pagination from "../components/Pagination";
@@ -15,9 +16,12 @@ import type { AppDispatch } from "../redux/store";
 import { debounce } from "lodash";
 import Modal from "../shared/modal/Modal";
 import TrackForm from "../components/TrackForm";
+import BulkModePanel from "../components/BulkModePanel";
+import { toggleBulkMode } from "../redux/tracks/slice";
 
 const TracksPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   const tracks = useSelector(selectTracks);
   const isLoading = useSelector(selectIsLoading);
@@ -60,6 +64,7 @@ const TracksPage: React.FC = () => {
       }, 500),
     []
   );
+
   const uniqueArtists = Array.from(
     new Set(
       tracks
@@ -70,7 +75,11 @@ const TracksPage: React.FC = () => {
 
   return (
     <div className="p-4 space-y-6">
-      <h1 data-testid="tracks-header" className="text-2xl font-bold">
+      <h1
+        data-testid="tracks-header"
+        className="text-2xl font-bold cursor-pointer hover:underline"
+        onClick={() => navigate("/tracks")}
+      >
         Tracks
       </h1>
 
@@ -81,6 +90,14 @@ const TracksPage: React.FC = () => {
           onClick={() => setIsCreateModalOpen(true)}
         >
           Create Track
+        </button>
+
+        <button
+          data-testid="select-mode-toggle"
+          className="bg-gray-600 text-white px-4 py-2 rounded"
+          onClick={() => dispatch(toggleBulkMode())}
+        >
+          Toggle Select Mode
         </button>
 
         <TrackFilters
@@ -96,6 +113,7 @@ const TracksPage: React.FC = () => {
           genreValue={genre}
           artistValue={artist}
         />
+        <BulkModePanel />
       </div>
 
       <TrackList tracks={tracks} isLoading={isLoading} />

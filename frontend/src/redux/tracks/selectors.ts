@@ -17,3 +17,9 @@ export const selectSelectedTrackLoading = (state: RootState) =>
   state.tracks.selectedTrackLoading;
 export const selectSelectedTrackError = (state: RootState) =>
   state.tracks.selectedTrackError;
+// ===============================
+// ======== BULK MODE =======
+// ===============================
+
+export const selectBulkMode = (state: RootState) => state.tracks.bulkMode;
+export const selectSelectedIds = (state: RootState) => state.tracks.selectedIds;

@@ -19,6 +19,8 @@ interface CombinedTracksState extends TracksState {
   selectedTrack: TrackResponse | null;
   selectedTrackLoading: boolean;
   selectedTrackError: string | null;
+  bulkMode: boolean;
+  selectedIds: number[];
 }
 
 // ===============================
@@ -37,6 +39,8 @@ const initialState: CombinedTracksState = {
   selectedTrack: null,
   selectedTrackLoading: false,
   selectedTrackError: null,
+  bulkMode: false,
+  selectedIds: [],
 };
 
 // ===============================
@@ -45,7 +49,28 @@ const initialState: CombinedTracksState = {
 const trackSlice = createSlice({
   name: "tracks",
   initialState,
-  reducers: {},
+  reducers: {
+    toggleBulkMode(state) {
+      state.bulkMode = !state.bulkMode;
+      state.selectedIds = [];
+    },
+    toggleSelectTrack(state, action) {
+      const id = action.payload;
+      if (state.selectedIds.includes(id)) {
+        state.selectedIds = state.selectedIds.filter(
+          (trackId) => trackId !== id
+        );
+      } else {
+        state.selectedIds.push(id);
+      }
+    },
+    selectAllTracks(state) {
+      state.selectedIds = state.items.map((t) => t.id);
+    },
+    unselectAllTracks(state) {
+      state.selectedIds = [];
+    },
+  },
   extraReducers: (builder) => {
     // ============================
     // ======= FETCH TRACKS =======
@@ -217,5 +242,12 @@ const trackSlice = createSlice({
       });
   },
 });
+
+export const {
+  toggleBulkMode,
+  toggleSelectTrack,
+  selectAllTracks,
+  unselectAllTracks,
+} = trackSlice.actions;
 
 export const tracksReducer = trackSlice.reducer;
